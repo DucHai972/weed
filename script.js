@@ -1,7 +1,9 @@
 var processingTimes = [];
+var flag = false;
 
 function submitForm() {
     var temp = [];
+    processingTimes.length = 0;
     temp.push(parseInt(document.getElementById("a_tiendon").value, 10));
     temp.push(parseInt(document.getElementById("a_phay").value, 10));
     temp.push(parseInt(document.getElementById("a_bao").value, 10));
@@ -123,10 +125,14 @@ function main_() {
     var minOrder_append = "Thứ tự tối ưu là: " + minOrder;
     var maxTotalTime_append = "Thời gian lớn nhất là: " + maxTotalTime;
     var maxOrder_append = "Thứ tự không tối ưu là: " + maxOrder;
-    
-    result_append.innerHTML = minOrder_append + "<br>" + minTotalTime_append + "<br>" + maxOrder_append + "<br>" + maxTotalTime_append;
-    body.appendChild(result_append)
-    console.log(minTotalTime, maxTotalTime)
-    
+    result_append.id = "res"
+    if (!flag)  {
+        result_append.innerHTML = minOrder_append + "<br>" + minTotalTime_append + "<br>" + maxOrder_append + "<br>" + maxTotalTime_append;
+        body.appendChild(result_append)
+        console.log(minTotalTime, maxTotalTime)
+        flag = true;
+    } else {
+        document.getElementById("res").innerHTML = minOrder_append + "<br>" + minTotalTime_append + "<br>" + maxOrder_append + "<br>" + maxTotalTime_append;;
+    }
 }
 
