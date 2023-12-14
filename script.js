@@ -55,7 +55,7 @@ function calculateDelayTime(processingTimes, order) {
 }
 
 function calculateTotalTime(processingTimes, order) {
-    let numSteps = 4;
+    let numSteps = 3;
     let machineTime = Array(numSteps).fill(0);
 
     for (let i of order) {
@@ -124,7 +124,7 @@ function main_() {
     var maxTotalTime_append = "Thời gian lớn nhất là: " + maxTotalTime;
     var maxOrder_append = "Thứ tự không tối ưu là: " + maxOrder;
     
-    result_append.innerHTML = minOrder_append + "<br>" + minTotalTime_append + "<br>" + maxTotalTime_append + "<br>" + maxOrder_append;
+    result_append.innerHTML = minOrder_append + "<br>" + minTotalTime_append + "<br>" + maxOrder_append + "<br>" + maxTotalTime_append;
     body.appendChild(result_append)
     console.log(minTotalTime, maxTotalTime)
     
