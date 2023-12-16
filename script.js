@@ -1,34 +1,119 @@
 var processingTimes = [];
 var flag = false;
+var flag_table = false;
+var rows;
+var columns;
+var col;
 
+function createTable() {
+    // Get values from input fields
+    rows = document.getElementById("rows").value;
+    columns = document.getElementById("columns").value;
+    col = columns;
+    // Create the table element
+    var table = document.createElement("table");
+    table.setAttribute("class", "custom-table");
+    table.setAttribute("id", "generatedTable");
+
+    // Create table rows and cells based on input values
+    for (var i = 0; i <= rows; i++) {
+        var row = table.insertRow();
+        for (var j = 0; j <= columns; j++) {
+            var cell = row.insertCell();
+
+        if (i === 0) {
+            if (j === 0) {
+                var textNode = document.createTextNode("Sản phẩm");
+                var spanElement = document.createElement("span");
+                spanElement.appendChild(textNode);
+
+                // Apply styles to the span element
+                spanElement.style.fontWeight = "bold";
+                spanElement.style.color = "blue"; // Set your desired styles here
+                // Append the styled span element to the cell
+                cell.appendChild(spanElement);
+            } else {
+                var headerText = getHeader(j);
+                var headerTextNode = document.createTextNode(headerText);
+
+                // Apply styles directly to the cell for other headers if needed
+                cell.appendChild(headerTextNode);
+                cell.style.fontWeight = "bold";
+                cell.style.color = "green"; // Set your desired styles here
+            }
+        }
+        else {
+                // Set the first cell in each row as the product name
+                if (j === 0) {
+                    cell.appendChild(document.createTextNode(getProductName(i)));
+                } else {
+                    // Create input elements for other cells
+                    var input = document.createElement("input");
+                    input.setAttribute("type", "text");
+                    input.setAttribute("id", getProductId(i, j));
+                    cell.appendChild(input);
+                }
+            }
+        }
+    }
+    
+    removeElements("input_row");
+    removeElements("input_column");
+    removeElements("createTable");
+    // Append the table to the body
+    document.body.appendChild(table);
+    var button = document.createElement("button");
+    button.textContent = "Tính";
+    button.onclick = function () {
+        submitForm();
+        main_();
+    };
+
+    document.body.appendChild(button);
+}
+
+function removeElements(className) {
+    var elements = document.getElementsByClassName(className);
+    while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
+    }
+}
+
+// Helper function to get the header text based on column index
+function getHeader(index) {
+    return "Bước " + index;
+}
+
+// Helper function to get the product name based on row index
+function getProductName(index) {
+    return String.fromCharCode('A'.charCodeAt(0)-1 + index);
+}
+
+// Helper function to get the product id based on row and column indices
+function getProductId(row, col) {
+    return row.toString() + col.toString();
+}
+
+//////
 function submitForm() {
     var temp = [];
     processingTimes.length = 0;
-    temp.push(parseInt(document.getElementById("a_tiendon").value, 10));
-    temp.push(parseInt(document.getElementById("a_phay").value, 10));
-    temp.push(parseInt(document.getElementById("a_bao").value, 10));
+    for (let i = 1; i <= rows; i++) {
+        for (let j = 1; j <= columns; j++)  {
+            temp.push(parseInt(document.getElementById(i.toString()+j.toString()).value, 10));
+        }
+    }
+    
 
-    temp.push(parseInt(document.getElementById("b_tiendon").value, 10));
-    temp.push(parseInt(document.getElementById("b_phay").value, 10));
-    temp.push(parseInt(document.getElementById("b_bao").value, 10));
-
-    temp.push(parseInt(document.getElementById("c_tiendon").value, 10));
-    temp.push(parseInt(document.getElementById("c_phay").value, 10));
-    temp.push(parseInt(document.getElementById("c_bao").value, 10));
-
-    temp.push(parseInt(document.getElementById("d_tiendon").value, 10));
-    temp.push(parseInt(document.getElementById("d_phay").value, 10));
-    temp.push(parseInt(document.getElementById("d_bao").value, 10));
-
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < rows; i++) {
         let row = [];
-        for (let j = 0; j < 3; j++) {
-            row.push(temp[i * 3 + j]);
+        for (let j = 0; j < columns; j++) {
+            row.push(temp[i * columns + j]);
         }
         processingTimes.push(row);
     }
 
-    console.log(processingTimes);
+    //console.log(processingTimes);
 }
 
 class ProcessingTime {
@@ -38,7 +123,7 @@ class ProcessingTime {
 }
 
 function calculateDelayTime(processingTimes, order) {
-    let numSteps = 4;
+    let numSteps = rows;
     let machineTime = Array(numSteps).fill(0);
     let delay = 0;
 
@@ -57,9 +142,10 @@ function calculateDelayTime(processingTimes, order) {
 }
 
 function calculateTotalTime(processingTimes, order) {
-    let numSteps = 3;
+    console.log(typeof col);
+    let numSteps = parseInt(col);
     let machineTime = Array(numSteps).fill(0);
-
+    console.log(machineTime);
     for (let i of order) {
         for (let j = 0; j < numSteps; ++j) {
             machineTime[j] = Math.max(machineTime[j], machineTime[j - 1] || 0) + processingTimes[i][j];
@@ -72,10 +158,10 @@ function calculateTotalTime(processingTimes, order) {
 
 function main_() {
     let defaultOrder = [];
-    for (let i = 0; i < 4; ++i) {
+    for (let i = 0; i < rows; ++i) {
         defaultOrder[i] = i;
     }
-    
+
     let minTotalTime = Infinity;
     let minOrder = [];
     let maxTotalTime = -Infinity;
@@ -103,10 +189,8 @@ function main_() {
     }
     
     const permutations = generatePermutations(defaultOrder);
-    
     for (let order of permutations) {
         let totalTime = calculateTotalTime(processingTimes, order);
-    
         if (totalTime < minTotalTime) {
             minTotalTime = totalTime;
             minOrder = order.slice();
@@ -129,10 +213,8 @@ function main_() {
     if (!flag)  {
         result_append.innerHTML = minOrder_append + "<br>" + minTotalTime_append + "<br>" + maxOrder_append + "<br>" + maxTotalTime_append;
         body.appendChild(result_append)
-        console.log(minTotalTime, maxTotalTime)
         flag = true;
     } else {
         document.getElementById("res").innerHTML = minOrder_append + "<br>" + minTotalTime_append + "<br>" + maxOrder_append + "<br>" + maxTotalTime_append;;
     }
 }
-
